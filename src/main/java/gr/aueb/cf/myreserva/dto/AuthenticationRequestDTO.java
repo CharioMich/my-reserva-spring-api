@@ -6,7 +6,7 @@ import lombok.*;
 @Builder
 public record AuthenticationRequestDTO(
         @NotNull
-        String username,
+        String email,
         @NotNull
         String password
 ) {}
