@@ -25,12 +25,18 @@ public class AuthenticationService {
             throws AppObjectNotAuthorizedException {
 
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(dto.username(), dto.password()));
+                new UsernamePasswordAuthenticationToken(dto.email(), dto.password()));
 
-        User user = userRepository.findByUsername(authentication.getName())
+        User user = userRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new AppObjectNotAuthorizedException("User", "User not authorized"));
 
         String token = jwtService.generateToken(authentication.getName(), user.getRole().name());
-        return new AuthenticationResponseDTO(user.getFirstname(), user.getLastname(), token);
+        return new AuthenticationResponseDTO(
+                user.getFirstname(),
+                user.getLastname(),
+                user.getEmail(),
+                user.getRole().toString(),
+                token
+        );
     }
 }

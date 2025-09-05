@@ -23,14 +23,14 @@ public class JwtService {
     private String secretKey = "5ce98d378ec88ea09ba8bcd511ef23645f04cc8e70b9134b98723a53c275bbc5";
     private long jwtExpiration = 10800000;  // 3 hours in milliseconds
 
-    public String generateToken(String username, String role) {
+    public String generateToken(String email, String role) {
         var claims = new HashMap<String, Object>();
         claims.put("role", role);
         return Jwts
                 .builder()
                 .setIssuer("self")
                 .setClaims(claims)
-                .setSubject(username)
+                .setSubject(email)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
