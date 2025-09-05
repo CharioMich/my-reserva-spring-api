@@ -15,6 +15,7 @@ public class Mapper {
 
     public UserReadOnlyDTO mapToUserReadOnlyDTO(User user) {
         return new UserReadOnlyDTO(
+                user.getId(),
                 user.getUsername(),
                 user.getEmail(),
                 user.getFirstname(),
@@ -33,5 +34,4 @@ public class Mapper {
         );
     }
 
-    public
 }
