@@ -31,6 +31,6 @@ public class Reservation extends AbstractEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false) // Foreign key for users
-    Long userId;
+    User user;
 
 }
