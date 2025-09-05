@@ -1,6 +1,7 @@
 package gr.aueb.cf.myreserva.dto;
 
 public record UserReadOnlyDTO (
+        Long id,
         String username,
         String email,
         String firstname,
