@@ -5,9 +5,11 @@ import lombok.*;
 
 @Builder
 public record AuthenticationResponseDTO (
+        String username,
+        String email,
         String firstname,
         String lastname,
-        String email,
+        String phoneNumber,
         String Role,
         String token
 ) {}
