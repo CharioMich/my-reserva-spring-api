@@ -1,21 +1,21 @@
 package gr.aueb.cf.myreserva.api;
 
 import gr.aueb.cf.myreserva.authentication.AuthenticationService;
+import gr.aueb.cf.myreserva.core.exceptions.AppObjectAlreadyExists;
 import gr.aueb.cf.myreserva.core.exceptions.AppObjectNotAuthorizedException;
 import gr.aueb.cf.myreserva.dto.AuthenticationRequestDTO;
 import gr.aueb.cf.myreserva.dto.AuthenticationResponseDTO;
+import gr.aueb.cf.myreserva.dto.UserInsertDTO;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api/auth")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthRestController {
 
@@ -24,10 +24,18 @@ public class AuthRestController {
     //private final IUserService userService;
     private final AuthenticationService authenticationService;
 
-    @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponseDTO> authenticate(@RequestBody AuthenticationRequestDTO authenticationRequestDTO)
+    @PostMapping("/login")
+    public ResponseEntity<AuthenticationResponseDTO> authenticate(@Valid @RequestBody AuthenticationRequestDTO authenticationRequestDTO) // @ModelAttribute for x-form-urlencoded data
             throws AppObjectNotAuthorizedException {
         AuthenticationResponseDTO authenticationResponseDTO = authenticationService.authenticate(authenticationRequestDTO);
         return new ResponseEntity<>(authenticationResponseDTO, HttpStatus.OK);
     }
+
+
+    @PostMapping("/register")
+    public ResponseEntity<AuthenticationResponseDTO> register(@Valid @RequestBody UserInsertDTO insertDTO) throws AppObjectAlreadyExists {
+        AuthenticationResponseDTO authenticationResponseDTO = authenticationService.register(insertDTO);
+        return new ResponseEntity<>(authenticationResponseDTO, HttpStatus.CREATED);
+    }
+
 }
