@@ -21,11 +21,10 @@ public class AuthRestController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthRestController.class);
 
-    //private final IUserService userService;
     private final AuthenticationService authenticationService;
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponseDTO> authenticate(@Valid @RequestBody AuthenticationRequestDTO authenticationRequestDTO) // @ModelAttribute for x-form-urlencoded data
+    public ResponseEntity<AuthenticationResponseDTO> authenticate(@Valid @ModelAttribute AuthenticationRequestDTO authenticationRequestDTO) // @ModelAttribute for x-form-urlencoded data
             throws AppObjectNotAuthorizedException {
         AuthenticationResponseDTO authenticationResponseDTO = authenticationService.authenticate(authenticationRequestDTO);
         return new ResponseEntity<>(authenticationResponseDTO, HttpStatus.OK);
