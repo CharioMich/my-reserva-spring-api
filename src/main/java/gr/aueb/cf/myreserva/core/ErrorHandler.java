@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * General error handler. Wraps the app, catches errors and handles them appropriately. Works as an output filter.
+ * @ ControllerAdvice marks class to work as global/general error handler. Wraps the app, catches errors and handles them appropriately. Works as an output filter.
  */
 @ControllerAdvice
 public class ErrorHandler {     // extends ResponseEntityExceptionHandler
