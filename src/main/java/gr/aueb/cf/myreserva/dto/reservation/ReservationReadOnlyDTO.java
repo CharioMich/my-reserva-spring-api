@@ -1,4 +1,4 @@
-package gr.aueb.cf.myreserva.dto;
+package gr.aueb.cf.myreserva.dto.reservation;
 
 import java.time.LocalDateTime;
 

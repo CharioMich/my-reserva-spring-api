@@ -1,4 +1,4 @@
-package gr.aueb.cf.myreserva.dto;
+package gr.aueb.cf.myreserva.dto.user;
 
 public record UserReadOnlyDTO (
         Long id,
