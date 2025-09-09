@@ -22,13 +22,12 @@ public class OpenApiConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("School API")
+                        .title("myReserva API")
                         .version("1.0.0")
-                        .description("Provides API for Schools with teachers")
+                        .description("Provides CRUD API for Users and Reservations")
                         .contact(new Contact()
                                 .name("Admin")
-                                .email("admin@cf.gr")
-                                .url("https://cf.gr"))
+                                .email("michalakiscm@gmail.com"))
                         .license(new License()
                                 .name("Apache 2.0")
                                 .url("https://www.apache.org/licenses/LICENSE-2.0")));
