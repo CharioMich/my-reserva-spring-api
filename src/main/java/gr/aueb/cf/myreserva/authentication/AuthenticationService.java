@@ -4,7 +4,7 @@ import gr.aueb.cf.myreserva.core.exceptions.AppObjectAlreadyExists;
 import gr.aueb.cf.myreserva.core.exceptions.AppObjectNotAuthorizedException;
 import gr.aueb.cf.myreserva.dto.AuthenticationRequestDTO;
 import gr.aueb.cf.myreserva.dto.AuthenticationResponseDTO;
-import gr.aueb.cf.myreserva.dto.UserInsertDTO;
+import gr.aueb.cf.myreserva.dto.user.UserInsertDTO;
 import gr.aueb.cf.myreserva.mapper.Mapper;
 import gr.aueb.cf.myreserva.model.User;
 import gr.aueb.cf.myreserva.repository.UserRepository;
