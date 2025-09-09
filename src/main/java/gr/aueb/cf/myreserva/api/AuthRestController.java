@@ -3,15 +3,17 @@ package gr.aueb.cf.myreserva.api;
 import gr.aueb.cf.myreserva.authentication.AuthenticationService;
 import gr.aueb.cf.myreserva.core.exceptions.AppObjectAlreadyExists;
 import gr.aueb.cf.myreserva.core.exceptions.AppObjectNotAuthorizedException;
+import gr.aueb.cf.myreserva.core.exceptions.ValidationException;
 import gr.aueb.cf.myreserva.dto.AuthenticationRequestDTO;
 import gr.aueb.cf.myreserva.dto.AuthenticationResponseDTO;
-import gr.aueb.cf.myreserva.dto.UserInsertDTO;
+import gr.aueb.cf.myreserva.dto.user.UserInsertDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,6 +25,9 @@ public class AuthRestController {
 
     private final AuthenticationService authenticationService;
 
+    /**
+     * LOGIN
+     */
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponseDTO> authenticate(@Valid @ModelAttribute AuthenticationRequestDTO authenticationRequestDTO) // @ModelAttribute for x-form-urlencoded data
             throws AppObjectNotAuthorizedException {
@@ -31,10 +36,24 @@ public class AuthRestController {
     }
 
 
+    /**
+     * REGISTER
+     */
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponseDTO> register(@Valid @RequestBody UserInsertDTO insertDTO) throws AppObjectAlreadyExists {
-        AuthenticationResponseDTO authenticationResponseDTO = authenticationService.register(insertDTO);
-        return new ResponseEntity<>(authenticationResponseDTO, HttpStatus.CREATED);
+    public ResponseEntity<AuthenticationResponseDTO> register(
+            @Valid @RequestBody UserInsertDTO insertDTO,
+            BindingResult bindingResult
+    ) throws AppObjectAlreadyExists, ValidationException {
+        try {
+            if (bindingResult.hasErrors()) throw new ValidationException(bindingResult);
+
+            AuthenticationResponseDTO authenticationResponseDTO = authenticationService.register(insertDTO);
+            return new ResponseEntity<>(authenticationResponseDTO, HttpStatus.CREATED);
+        } catch (Exception e) {
+            LOGGER.warn("Failed to register new user");
+            throw e;
+        }
+
     }
 
 }
