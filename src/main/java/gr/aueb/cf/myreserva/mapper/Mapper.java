@@ -1,6 +1,9 @@
 package gr.aueb.cf.myreserva.mapper;
 
 import gr.aueb.cf.myreserva.dto.*;
+import gr.aueb.cf.myreserva.dto.reservation.ReservationReadOnlyDTO;
+import gr.aueb.cf.myreserva.dto.user.UserInsertDTO;
+import gr.aueb.cf.myreserva.dto.user.UserReadOnlyDTO;
 import gr.aueb.cf.myreserva.model.Reservation;
 import gr.aueb.cf.myreserva.model.User;
 import lombok.RequiredArgsConstructor;
