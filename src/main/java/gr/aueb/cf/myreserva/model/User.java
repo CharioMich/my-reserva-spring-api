@@ -60,6 +60,15 @@ public class User extends AbstractEntity implements UserDetails {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
+    /**
+     * Override UserDetails getUsername() and
+     * Define the Principal by the email instead of default username because we're using email in the login credentials
+     * @return user's email
+     */
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
 
     @Override
     public boolean isAccountNonExpired() {
