@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class Mapper {
 
-
     public UserReadOnlyDTO mapToUserReadOnlyDTO(User user) {
         return new UserReadOnlyDTO(
                 user.getId(),
@@ -25,19 +24,6 @@ public class Mapper {
                 user.getRole().toString()
         );
     }
-
-    public AuthenticationResponseDTO mapToAuthenticationResponseDTO(User user, String token) {
-        return new AuthenticationResponseDTO(
-                user.getUsername(),
-                user.getEmail(),
-                user.getFirstname(),
-                user.getLastname(),
-                user.getPhoneNumber(),
-                user.getRole().toString(),
-                token
-        );
-    }
-
 
     public User mapToUserEntity(UserInsertDTO insertDTO) {
         User user = new User();
@@ -52,7 +38,6 @@ public class Mapper {
         return user;
     }
 
-
     public ReservationReadOnlyDTO mapToReservationReadOnlyDTO(Reservation reservation) {
         return new ReservationReadOnlyDTO(
                 reservation.getId(),
@@ -61,5 +46,4 @@ public class Mapper {
                 reservation.getText()
         );
     }
-
 }
