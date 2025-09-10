@@ -1,5 +1,7 @@
 package gr.aueb.cf.myreserva.dto.reservation;
 
+import gr.aueb.cf.myreserva.dto.user.UserReadOnlyDTO;
+
 import java.time.LocalDateTime;
 
 public record ReservationUserReadOnlyDTO(
@@ -7,10 +9,5 @@ public record ReservationUserReadOnlyDTO(
         LocalDateTime dateTime,
         String hours,
         String text,
-        String username,
-        String email,
-        String firstname,
-        String lastname,
-        String phoneNumber,
-        String role
+        UserReadOnlyDTO user
 ) {}
