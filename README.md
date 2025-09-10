@@ -35,6 +35,6 @@ Admin features: Reservation monitoring with filtering by date and user informati
 with your corresponding database name, credentials and jwt secret key.
 
 
-4. Build the project and run ``` gradlew bootRun ```
+4. Build the project and run ``` ./gradlew bootRun ```
 
 The project should be running on ``` http://localhost:8080/api ```
