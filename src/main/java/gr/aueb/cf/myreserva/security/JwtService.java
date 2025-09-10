@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -16,14 +17,14 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-//    private String secretKey = System.getenv("SECRET_KEY");
-//    private String secretKey = "FvArDZiJ1hvR9k3Ks1J6s8FqbmL6rRnlmTL5J3jNiT8";
+    @Value("${jwt.secret-key}")
+    private String secretKey;
+    @Value("${jwt.access-expiration-ms}")
+    private long jwtAccessExpiration;
+    @Value("${jwt.refresh-expiration-ms}")
+    private long jwtRefreshExpiration;
 
-    //    Strong security 384-bits = 48 bytes = 64 Base64URL characters
-    private String secretKey = "5ce98d378ec88ea09ba8bcd511ef23645f04cc8e70b9134b98723a53c275bbc5";
-    private long jwtExpiration = 10800000;  // 3 hours in milliseconds
-
-    public String generateToken(String email, String role) {
+    public String generateAccessToken(String email, String role) {
         var claims = new HashMap<String, Object>();
         claims.put("role", role);
         return Jwts
@@ -32,14 +33,26 @@ public class JwtService {
                 .setClaims(claims)
                 .setSubject(email)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtAccessExpiration))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public boolean isTokenValid(String token, UserDetails userDetails) {
+    public String generateRefreshToken(String email) {
+        return Jwts
+                .builder()
+                .setIssuer("self")
+                .setSubject(email)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtRefreshExpiration))
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+
+    public boolean isTokenValid(String token, String email) {
         final String subject = extractSubject(token);
-        return (subject.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        return (subject.equals(email)) && !isTokenExpired(token);
     }
 
     public String getStringClaim(String token, String claim) {

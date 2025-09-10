@@ -1,12 +1,17 @@
 package gr.aueb.cf.myreserva.authentication;
 
 import gr.aueb.cf.myreserva.core.exceptions.AppObjectAlreadyExists;
+import gr.aueb.cf.myreserva.core.exceptions.AppObjectInvalidArgumentException;
 import gr.aueb.cf.myreserva.core.exceptions.AppObjectNotAuthorizedException;
 import gr.aueb.cf.myreserva.dto.AuthenticationRequestDTO;
 import gr.aueb.cf.myreserva.dto.AuthenticationResponseDTO;
+import gr.aueb.cf.myreserva.dto.TokensAndUserDTO;
 import gr.aueb.cf.myreserva.dto.user.UserInsertDTO;
+import gr.aueb.cf.myreserva.dto.user.UserReadOnlyDTO;
 import gr.aueb.cf.myreserva.mapper.Mapper;
+import gr.aueb.cf.myreserva.model.RefreshToken;
 import gr.aueb.cf.myreserva.model.User;
+import gr.aueb.cf.myreserva.repository.RefreshTokenRepository;
 import gr.aueb.cf.myreserva.repository.UserRepository;
 import gr.aueb.cf.myreserva.security.JwtService;
 import jakarta.transaction.Transactional;
@@ -14,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,11 +32,12 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final Mapper mapper;
     private final JwtService jwtService;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
 
-    public AuthenticationResponseDTO authenticate(AuthenticationRequestDTO dto)
+    public TokensAndUserDTO authenticate(AuthenticationRequestDTO dto)
             throws AppObjectNotAuthorizedException {
 
         Authentication authentication = authenticationManager.authenticate(
@@ -39,15 +46,20 @@ public class AuthenticationService {
         User user = userRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new AppObjectNotAuthorizedException("User", "User not authorized"));
 
-        String token = jwtService.generateToken(authentication.getName(), user.getRole().name());
-        return new AuthenticationResponseDTO(
-                user.getUsername(),
-                user.getEmail(),
-                user.getFirstname(),
-                user.getLastname(),
-                user.getPhoneNumber(),
-                user.getRole().toString(),
-                token
+        String accessToken = jwtService.generateAccessToken(authentication.getName(), user.getRole().name());
+        String refreshToken = jwtService.generateRefreshToken(authentication.getName());
+
+        RefreshToken refreshTokenEntity = new RefreshToken();
+        refreshTokenEntity.setUser(user);
+        refreshTokenEntity.setToken(refreshToken);
+        refreshTokenRepository.save(refreshTokenEntity);
+
+        UserReadOnlyDTO userReadOnlyDTO = mapper.mapToUserReadOnlyDTO(user);
+
+        return new TokensAndUserDTO(
+                userReadOnlyDTO,
+                accessToken,
+                refreshToken
         );
     }
 
@@ -64,11 +76,41 @@ public class AuthenticationService {
         user.setPassword(passwordEncoder.encode(insertDTO.password()));
 
         User savedUser = userRepository.save(user);
+        UserReadOnlyDTO userReadOnlyDTO = mapper.mapToUserReadOnlyDTO(savedUser);
 
-        String token = jwtService.generateToken(savedUser.getEmail(), savedUser.getRole().name());
+        String token = jwtService.generateAccessToken(savedUser.getEmail(), savedUser.getRole().name());
 
-        return mapper.mapToAuthenticationResponseDTO(savedUser, token);
+        return new AuthenticationResponseDTO(userReadOnlyDTO, token);
 
+    }
+
+
+    public TokensAndUserDTO verifyRefreshToken(String refreshTokenCookie) throws AppObjectInvalidArgumentException, AppObjectNotAuthorizedException {
+
+        RefreshToken refreshToken = refreshTokenRepository.findByToken(refreshTokenCookie)
+                .orElseThrow(() -> new AppObjectInvalidArgumentException("Refresh Token", "Invalid refresh token."));
+
+        User user = refreshToken.getUser();
+
+        if (!jwtService.isTokenValid(refreshTokenCookie, user.getEmail())) {
+            refreshTokenRepository.delete(refreshToken);
+            throw new AppObjectNotAuthorizedException("Refresh Token", "Refresh token expired or invalid.");
+        }
+        // Generate new tokens
+        String newAccessToken = jwtService.generateAccessToken(user.getUsername(), user.getRole().toString());
+        String newRefreshToken = jwtService.generateRefreshToken(user.getUsername());
+
+        // Rotate refresh token in DB
+        refreshToken.setToken(newRefreshToken);
+        refreshTokenRepository.save(refreshToken);
+
+        UserReadOnlyDTO userReadOnlyDTO = mapper.mapToUserReadOnlyDTO(user);
+
+        return new TokensAndUserDTO(
+                userReadOnlyDTO,
+                newAccessToken,
+                newRefreshToken
+        );
     }
 
 }

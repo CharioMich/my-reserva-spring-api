@@ -54,8 +54,8 @@ public class SecurityConfiguration {
                 .exceptionHandling(exceptions -> exceptions.accessDeniedHandler(myCustomAccessDeniedHandler()))
                 .authorizeHttpRequests(req -> req
                         .requestMatchers("/api/teachers/save", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                        .requestMatchers("/api/auth/authenticate").permitAll()
-                        .requestMatchers("/**").permitAll() // for Swagger
+                        .requestMatchers("/api/auth/login").permitAll()
+                        .requestMatchers("/**").permitAll() // For testing. (Swagger etc). Remove at prod.
                 )
                 .sessionManagement((session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))) // REST api - JWT Authentication
                 .authenticationProvider(authenticationProvider())
