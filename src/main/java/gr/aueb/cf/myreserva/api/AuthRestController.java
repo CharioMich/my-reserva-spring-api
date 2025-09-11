@@ -9,9 +9,6 @@ import gr.aueb.cf.myreserva.dto.AuthenticationRequestDTO;
 import gr.aueb.cf.myreserva.dto.AuthenticationResponseDTO;
 import gr.aueb.cf.myreserva.dto.TokensAndUserDTO;
 import gr.aueb.cf.myreserva.dto.user.UserInsertDTO;
-import gr.aueb.cf.myreserva.repository.RefreshTokenRepository;
-import gr.aueb.cf.myreserva.security.JwtService;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,9 +28,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthRestController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthRestController.class);
-    private final JwtService jwtService;
     private final AuthenticationService authenticationService;
-    private final RefreshTokenRepository refreshTokenRepository;
 
     @Value("${jwt.refresh-expiration-ms}")
     private long jwtRefreshExpiration;
@@ -81,7 +76,7 @@ public class AuthRestController {
             AuthenticationResponseDTO authenticationResponseDTO = authenticationService.register(insertDTO);
             return new ResponseEntity<>(authenticationResponseDTO, HttpStatus.CREATED);
         } catch (Exception e) {
-            LOGGER.warn("Failed to register new user");
+            LOGGER.warn("Failed to register new user", e);
             throw e;
         }
     }
