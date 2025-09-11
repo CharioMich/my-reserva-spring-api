@@ -1,5 +1,7 @@
 package gr.aueb.cf.myreserva.authentication;
 
+import gr.aueb.cf.myreserva.config.AdminWhiteList;
+import gr.aueb.cf.myreserva.core.enums.Role;
 import gr.aueb.cf.myreserva.core.exceptions.AppObjectAlreadyExists;
 import gr.aueb.cf.myreserva.core.exceptions.AppObjectInvalidArgumentException;
 import gr.aueb.cf.myreserva.core.exceptions.AppObjectNotAuthorizedException;
@@ -24,6 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +38,7 @@ public class AuthenticationService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AdminWhiteList adminWhiteList;
 
 
     public TokensAndUserDTO authenticate(AuthenticationRequestDTO dto)
@@ -44,7 +48,7 @@ public class AuthenticationService {
                 new UsernamePasswordAuthenticationToken(dto.email(), dto.password()));
 
         User user = userRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new AppObjectNotAuthorizedException("User", "User not authorized"));
+                .orElseThrow(() -> new AppObjectNotAuthorizedException("User", "User not found"));
 
         String accessToken = jwtService.generateAccessToken(authentication.getName(), user.getRole().name());
         String refreshToken = jwtService.generateRefreshToken(authentication.getName());
@@ -73,9 +77,15 @@ public class AuthenticationService {
 
         User user = mapper.mapToUserEntity(insertDTO);
 
-        user.setPassword(passwordEncoder.encode(insertDTO.password()));
+        user.setPassword(passwordEncoder.encode(insertDTO.password()));     // Encode password before storing in DB
 
-        User savedUser = userRepository.save(user);
+        // If the registered email exists into the admin whitelist, an ADMIN role is given to the user
+        Role role = adminWhiteList.isAdmin(user.getEmail())
+                ? Role.ADMIN
+                : Role.USER;
+        user.setRole(role);
+
+        User savedUser = userRepository.save(user); // Persist new user
         UserReadOnlyDTO userReadOnlyDTO = mapper.mapToUserReadOnlyDTO(savedUser);
 
         String token = jwtService.generateAccessToken(savedUser.getEmail(), savedUser.getRole().name());
