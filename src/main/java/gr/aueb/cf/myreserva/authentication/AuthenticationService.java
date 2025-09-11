@@ -26,6 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.sql.Ref;
 import java.util.List;
 
 @Service
@@ -52,6 +53,10 @@ public class AuthenticationService {
 
         String accessToken = jwtService.generateAccessToken(authentication.getName(), user.getRole().name());
         String refreshToken = jwtService.generateRefreshToken(authentication.getName());
+
+        // Remove old refresh token from database if it exists, so we can avoid duplicate key constraint violation
+        refreshTokenRepository.findByUser(user)
+                .ifPresent(refreshTokenRepository::delete);
 
         RefreshToken refreshTokenEntity = new RefreshToken();
         refreshTokenEntity.setUser(user);
