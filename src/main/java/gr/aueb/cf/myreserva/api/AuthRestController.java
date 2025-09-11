@@ -9,7 +9,9 @@ import gr.aueb.cf.myreserva.dto.AuthenticationRequestDTO;
 import gr.aueb.cf.myreserva.dto.AuthenticationResponseDTO;
 import gr.aueb.cf.myreserva.dto.TokensAndUserDTO;
 import gr.aueb.cf.myreserva.dto.user.UserInsertDTO;
+import gr.aueb.cf.myreserva.repository.RefreshTokenRepository;
 import gr.aueb.cf.myreserva.security.JwtService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ public class AuthRestController {
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthRestController.class);
     private final JwtService jwtService;
     private final AuthenticationService authenticationService;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Value("${jwt.refresh-expiration-ms}")
     private long jwtRefreshExpiration;
@@ -117,6 +120,39 @@ public class AuthRestController {
             LOGGER.error("Refresh token invalid or expired");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+    }
+
+
+    /**
+     * LOGOUT
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(
+            @CookieValue(name = "refreshToken", required = false) String refreshToken,
+            HttpServletResponse response
+    ) throws AppObjectNotAuthorizedException {
+
+        // Try to delete refresh token from db if it exists
+        if (refreshToken != null && !refreshToken.isEmpty()) {
+            try {
+                authenticationService.logout(refreshToken);
+            } catch (AppObjectNotAuthorizedException e) {
+                LOGGER.info("Refresh token not provided, user already logged out");
+            }
+        }
+
+        // Clear cookie in any case
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(true)         // set to true in production
+                .path("/")
+                .maxAge(0)            // deletes the cookie immediately
+                .sameSite("Strict")   // optional for CSRF protection
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .build();
     }
 
 }

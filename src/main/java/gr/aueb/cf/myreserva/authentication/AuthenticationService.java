@@ -113,4 +113,13 @@ public class AuthenticationService {
         );
     }
 
+
+    public void logout(String refreshToken) throws AppObjectNotAuthorizedException {
+        RefreshToken refreshTokenEntity = refreshTokenRepository.findByToken(refreshToken)
+                .orElseThrow(() -> new AppObjectNotAuthorizedException("Refresh Token", "Refresh token not provided, user not logged in."));
+
+        // Remove token from database
+        refreshTokenRepository.delete(refreshTokenEntity);
+    }
+
 }
