@@ -1,4 +1,4 @@
-package gr.aueb.cf.myreserva.authentication;
+package gr.aueb.cf.myreserva.config;
 
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
