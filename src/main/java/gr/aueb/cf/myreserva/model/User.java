@@ -57,8 +57,8 @@ public class User extends AbstractEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
-    }
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));  // Add ROLE_ prefix so Spring Security's hasRole() works
+    }                                                                       // ex. hasRole('ADMIN') → Spring automatically checks for ROLE_ADMIN
 
     /**
      * Override UserDetails getUsername() and
