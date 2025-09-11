@@ -55,7 +55,8 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(req -> req
                         .requestMatchers("/api/teachers/save", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/api/auth/login").permitAll()
-                        .requestMatchers("/**").permitAll() // For testing. (Swagger etc). Remove at prod.
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/**").permitAll() // TODO ! Remove at prod ! Only for testing
                 )
                 .sessionManagement((session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))) // REST api - JWT Authentication
                 .authenticationProvider(authenticationProvider())
