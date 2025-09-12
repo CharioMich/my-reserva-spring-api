@@ -1,12 +1,13 @@
 package gr.aueb.cf.myreserva.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "reservations")
@@ -18,19 +19,20 @@ public class Reservation extends AbstractEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column(nullable = false)
-    LocalDateTime dateTime;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate date;
 
     @Column(nullable = false)
-    String hours;
+    private String hours;
 
     @Column(nullable = true)
-    String text;
+    private String text;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false) // Foreign key for users
-    User user;
+    private User user;
 
 }

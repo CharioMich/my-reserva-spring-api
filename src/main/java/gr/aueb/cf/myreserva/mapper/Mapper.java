@@ -41,7 +41,7 @@ public class Mapper {
     public ReservationReadOnlyDTO mapToReservationReadOnlyDTO(Reservation reservation) {
         return new ReservationReadOnlyDTO(
                 reservation.getId(),
-                reservation.getDateTime(),
+                reservation.getDate(),
                 reservation.getHours(),
                 reservation.getText()
         );
