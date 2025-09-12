@@ -5,12 +5,14 @@ import gr.aueb.cf.myreserva.core.exceptions.AppObjectAlreadyExists;
 import gr.aueb.cf.myreserva.core.exceptions.AppObjectInvalidArgumentException;
 import gr.aueb.cf.myreserva.core.exceptions.AppObjectNotAuthorizedException;
 import gr.aueb.cf.myreserva.core.exceptions.ValidationException;
+import gr.aueb.cf.myreserva.dto.ApiResponse;
 import gr.aueb.cf.myreserva.dto.AuthenticationRequestDTO;
 import gr.aueb.cf.myreserva.dto.AuthenticationResponseDTO;
 import gr.aueb.cf.myreserva.dto.TokensAndUserDTO;
 import gr.aueb.cf.myreserva.dto.user.UserInsertDTO;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +40,7 @@ public class AuthRestController {
      * LOGIN
      */
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponseDTO> authenticate(
+    public ResponseEntity<ApiResponse<AuthenticationResponseDTO>> authenticate(
             @Valid @ModelAttribute AuthenticationRequestDTO authenticationRequestDTO, // @ModelAttribute for x-form-urlencoded data
             HttpServletResponse response
     )
@@ -58,7 +60,13 @@ public class AuthRestController {
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
         AuthenticationResponseDTO authenticationResponseDTO = new AuthenticationResponseDTO(tokensAndUserDTO.user(), tokensAndUserDTO.accessToken());
-        return new ResponseEntity<>(authenticationResponseDTO, HttpStatus.OK);
+        ApiResponse<AuthenticationResponseDTO> apiResponse = new ApiResponse<>(
+                true,
+                "User logged in",
+                authenticationResponseDTO
+        );
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
 
@@ -66,7 +74,7 @@ public class AuthRestController {
      * REGISTER
      */
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponseDTO> register(
+    public ResponseEntity<ApiResponse<AuthenticationResponseDTO>> register(
             @Valid @RequestBody UserInsertDTO insertDTO,
             BindingResult bindingResult
     ) throws AppObjectAlreadyExists, ValidationException {
@@ -74,7 +82,13 @@ public class AuthRestController {
             if (bindingResult.hasErrors()) throw new ValidationException(bindingResult);
 
             AuthenticationResponseDTO authenticationResponseDTO = authenticationService.register(insertDTO);
-            return new ResponseEntity<>(authenticationResponseDTO, HttpStatus.CREATED);
+            ApiResponse<AuthenticationResponseDTO> apiResponse = new ApiResponse<>(
+                    true,
+                    "New user created",
+                    authenticationResponseDTO
+            );
+
+            return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
         } catch (Exception e) {
             LOGGER.warn("Failed to register new user", e);
             throw e;
@@ -122,7 +136,7 @@ public class AuthRestController {
      * LOGOUT
      */
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(
+    public ResponseEntity<ApiResponse<Null>> logout(
             @CookieValue(name = "refreshToken", required = false) String refreshToken,
             HttpServletResponse response
     ) throws AppObjectNotAuthorizedException {
@@ -136,6 +150,12 @@ public class AuthRestController {
             }
         }
 
+        ApiResponse<Null> apiResponse = new ApiResponse<>(
+                true,
+                "User logged out, token cleared",
+                null
+        );
+
         // Clear cookie in any case
         ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
@@ -147,7 +167,7 @@ public class AuthRestController {
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .build();
+                .body(apiResponse);
     }
 
 }
