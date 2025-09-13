@@ -1,10 +1,10 @@
 package gr.aueb.cf.myreserva.security;
 
 import gr.aueb.cf.myreserva.authentication.JwtAuthenticationFilter;
-import gr.aueb.cf.myreserva.core.enums.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -44,7 +44,7 @@ public class SecurityConfiguration {
     /**
      * Configures filter ordering via a Spring Boot DSL (domain specific language)
      * It's a sequence of Servlet filters automatically registered by Spring Security.
-     * Each filter has a very specific job (e.g., authentication, authorization, exception handling, CORS, CSRF).
+     * Each filter has a specific job (e.g., authentication, authorization, exception handling, CORS, CSRF).
      * Requests flow through the filters in order until they reach your application (or get rejected).
      */
     @Bean
@@ -55,12 +55,16 @@ public class SecurityConfiguration {
                 .exceptionHandling(exceptions -> exceptions.authenticationEntryPoint(myCustomAuthenticationEntryPoint()))
                 .exceptionHandling(exceptions -> exceptions.accessDeniedHandler(myCustomAccessDeniedHandler()))
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers("/api/teachers/save", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                        .requestMatchers("/api/auth/login").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/**").permitAll() // TODO ! Remove at prod ! Only for testing
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/auth/login", "/auth/register", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/user-dashboard").hasRole("USER")
+                        .requestMatchers("/users/**").authenticated()
+                        .requestMatchers("/auth/logout").authenticated()
+                        .requestMatchers("/reservations").authenticated()
+                        .requestMatchers("/reservations/**").authenticated()
+//                        .requestMatchers("/**").permitAll() // Remove at prod ! Testing Only
                 )
-                .sessionManagement((session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))) // REST api - JWT Authentication
+                .sessionManagement((session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))) // REST api - JWT Authentication. Every request must provide a valid access token
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
