@@ -1,7 +1,10 @@
 package gr.aueb.cf.myreserva.mapper;
 
+import gr.aueb.cf.myreserva.core.enums.Role;
 import gr.aueb.cf.myreserva.dto.*;
+import gr.aueb.cf.myreserva.dto.reservation.ReservationPublicReadOnlyDTO;
 import gr.aueb.cf.myreserva.dto.reservation.ReservationReadOnlyDTO;
+import gr.aueb.cf.myreserva.dto.reservation.ReservationUserReadOnlyDTO;
 import gr.aueb.cf.myreserva.dto.user.UserInsertDTO;
 import gr.aueb.cf.myreserva.dto.user.UserReadOnlyDTO;
 import gr.aueb.cf.myreserva.model.Reservation;
@@ -21,7 +24,7 @@ public class Mapper {
                 user.getFirstname(),
                 user.getLastname(),
                 user.getPhoneNumber(),
-                user.getRole().toString()
+                user.getRole().toString().toLowerCase()
         );
     }
 
@@ -33,7 +36,7 @@ public class Mapper {
         user.setFirstname(insertDTO.firstname());
         user.setLastname(insertDTO.lastname());
         user.setPhoneNumber(insertDTO.phoneNumber());
-        user.setRole(insertDTO.role());
+        user.setRole(null);
 
         return user;
     }
@@ -44,6 +47,23 @@ public class Mapper {
                 reservation.getDate(),
                 reservation.getHours(),
                 reservation.getText()
+        );
+    }
+
+    public ReservationPublicReadOnlyDTO mapToReservationPublicReadOnlyDTO(Reservation reservation) {
+        return new ReservationPublicReadOnlyDTO(
+                reservation.getDate(),
+                reservation.getHours()
+        );
+    }
+
+    public ReservationUserReadOnlyDTO mapToReservationUserReadOnlyDTO(Reservation reservation) {
+        return new ReservationUserReadOnlyDTO(
+                reservation.getId(),
+                reservation.getDate(),
+                reservation.getHours(),
+                reservation.getText(),
+                mapToUserReadOnlyDTO(reservation.getUser())
         );
     }
 }

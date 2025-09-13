@@ -1,6 +1,5 @@
 package gr.aueb.cf.myreserva.dto.reservation;
 
-import gr.aueb.cf.myreserva.model.User;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -11,11 +10,11 @@ import java.time.LocalDate;
 public record ReservationInsertDTO (
 
         @NotNull(message = "Date is required")
-        @Pattern(
-                regexp = "^\\d{4}-\\d{2}-\\d{2}$",
-                message = "Date must be in ISO format: yyyy-MM-dd"
-        )
-        LocalDate dateTime,
+//        @Pattern(     // for String
+//                regexp = "^\\d{4}-\\d{2}-\\d{2}$",
+//                message = "Date must be in ISO format: yyyy-MM-dd"
+//        )
+        LocalDate date,
 
         @NotEmpty(message = "Hours is required")
         @Pattern(
