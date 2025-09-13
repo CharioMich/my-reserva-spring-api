@@ -1,0 +1,473 @@
+{
+	"info": {
+		"_postman_id": "63218afd-a11e-49e7-a2ec-428f4930a445",
+		"name": "myReservaSpring",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44661988",
+		"_collection_link": "https://babis-5548699.postman.co/workspace/Babis's-Workspace~c6212506-c72d-4b18-8e08-79a03bbf3f89/collection/44661988-63218afd-a11e-49e7-a2ec-428f4930a445?action=share&source=collection_link&creator=44661988"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Update Current User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsInN1YiI6InRlc3Q0QGF1ZWIuZ3IiLCJpYXQiOjE3NTc0MjI3OTAsImV4cCI6MTc1NzQzMzU5MH0.KA0ooZzvq3ixDZizFgYl8hQgTJ7IZCAIyNdtXslml08",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "phoneNumber",
+									"value": "6933333333",
+									"type": "text"
+								},
+								{
+									"key": "",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{spring_url}}/users/current",
+							"host": [
+								"{{spring_url}}"
+							],
+							"path": [
+								"users",
+								"current"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User By ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJzdWIiOiJhZG1pbkBhdWViLmdyIiwiaWF0IjoxNzU3NTg4Mjk3LCJleHAiOjE3NTc1OTkwOTd9.fhZw-uJXJJZ30kaNQ5OfkIidd_8JCC-ophW565xSeEE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{spring_url}}/users/{{userId}}",
+							"host": [
+								"{{spring_url}}"
+							],
+							"path": [
+								"users",
+								"{{userId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Users Paginated",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJzdWIiOiJhZG1pbkBhdWViLmdyIiwiaWF0IjoxNzU3NTkwMDA5LCJleHAiOjE3NTc2MDA4MDl9.vSelUiw_2DC3ozBAROVZ1Yc7fL0ddECREHhAJAwFUHo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{spring_url}}/users/paginated?page=1&size=2",
+							"host": [
+								"{{spring_url}}"
+							],
+							"path": [
+								"users",
+								"paginated"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reservations",
+			"item": [
+				{
+					"name": "New Reservation",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"date\": \"2025-10-15\",\r\n    \"hours\": \"11:30\",\r\n    \"text\": \"Some text\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{spring_url}}/reservations",
+							"host": [
+								"{{spring_url}}"
+							],
+							"path": [
+								"reservations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Reservations Paginated",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJzdWIiOiJhZG1pbkBhdWViLmdyIiwiaWF0IjoxNzU3NzA4MzkzLCJleHAiOjE3NTc3MTkxOTN9.IwRAEQOmYMhn2phlhRDYxMzxLQKdPaHkzIIFR-i2m68",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "userLogin@test.com",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{spring_url}}/reservations?page=0&size=3",
+							"host": [
+								"{{spring_url}}"
+							],
+							"path": [
+								"reservations"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User's Reservations",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true,
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{spring_url}}/reservations/current",
+							"host": [
+								"{{spring_url}}"
+							],
+							"path": [
+								"reservations",
+								"current"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Reservations By Date",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{spring_url}}/reservations/reserved/{{date}}",
+							"host": [
+								"{{spring_url}}"
+							],
+							"path": [
+								"reservations",
+								"reserved",
+								"{{date}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "email",
+							"value": "test4@aueb.gr",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "Password1@",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "admin@aueb.gr",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "email",
+							"value": "testus@aueb.com",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{spring_url}}/auth/login",
+					"host": [
+						"{{spring_url}}"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"user4\",\r\n    \"email\": \"test4@aueb.gr\",\r\n    \"password\": \"Password1@\",\r\n    \"confirmPassword\": \"Password1@\",\r\n    \"firstname\": \"John\", \r\n    \"lastname\": \"Doe\",\r\n    \"phoneNumber\": \"6912334535\",\r\n    \"role\": \"user\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{spring_url}}/auth/register",
+					"host": [
+						"{{spring_url}}"
+					],
+					"path": [
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register Admin",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"admin\",\r\n    \"email\": \"admin@aueb.gr\",\r\n    \"password\": \"Password1@\",\r\n    \"confirmPassword\": \"Password1@\",\r\n    \"firstname\": \"John\", \r\n    \"lastname\": \"Doe\",\r\n    \"phoneNumber\": \"6972490025\",\r\n    \"role\": \"admin\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{spring_url}}/auth/register",
+					"host": [
+						"{{spring_url}}"
+					],
+					"path": [
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Refresh Token",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{spring_url}}/auth/refresh-token",
+					"host": [
+						"{{spring_url}}"
+					],
+					"path": [
+						"auth",
+						"refresh-token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Logout",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsInN1YiI6InRlc3Q0QGF1ZWIuZ3IiLCJpYXQiOjE3NTc3NTkzOTIsImV4cCI6MTc1Nzc3MDE5Mn0.kQZcg2wE_wqYAL3PCr7eN88Gu6nk6XuFdgeLKRjCQn4",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "email",
+							"value": "userLogin@test.com",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "12345678",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "{{spring_url}}/auth/logout",
+					"host": [
+						"{{spring_url}}"
+					],
+					"path": [
+						"auth",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
