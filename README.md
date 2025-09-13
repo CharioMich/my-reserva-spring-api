@@ -42,4 +42,14 @@ with your corresponding database name, credentials and jwt secret key.
 
 The project should be running on ``` http://localhost:8080/api ```
 
+
 Browse to http://localhost:8080/api/swagger-ui/index.html for OpenAPI endpoint documentation. (documentation under development)
+
+---
+## Postman
+A Postman collection and environment to test the API are included under the ``` src/main/resources/postman ``` directory.
+#### How to Use:
+1. Open Postman.
+2.  Import the collection: postman/myReservaSpring.postman_collection.json.
+3.  Import the environment: postman/myReservaSpring.postman_environment.json.
+4.  Select the environment (adjust variables if needed) and run requests.
