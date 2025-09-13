@@ -12,9 +12,17 @@ import java.util.Optional;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long>, JpaSpecificationExecutor<Reservation> {
 
+    // JPQL
     @Query("SELECT r FROM Reservation r JOIN FETCH r.user " +
-            "WHERE FUNCTION('DATE', r.dateTime) = :date")
+            "WHERE FUNCTION('DATE', r.date) = :date")
     List<Reservation> findByDateWithUser(@Param("date") LocalDate date);
 
-    List<Reservation> findByUserId(Long id);
+//    For Eager Fetch
+//    @Query("SELECT r FROM Reservation r JOIN FETCH r.user u " +
+//            "WHERE u.email = :email")
+    List<Reservation> findByUserEmail(String email);
+
+    List<Reservation> findByDate(LocalDate date);
+
+    Optional<Reservation> findByDateAndHours(LocalDate date, String hours);
 }
