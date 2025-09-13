@@ -5,11 +5,9 @@ import gr.aueb.cf.myreserva.core.exceptions.AppObjectAlreadyExists;
 import gr.aueb.cf.myreserva.core.exceptions.AppObjectInvalidArgumentException;
 import gr.aueb.cf.myreserva.core.exceptions.AppObjectNotAuthorizedException;
 import gr.aueb.cf.myreserva.core.exceptions.ValidationException;
-import gr.aueb.cf.myreserva.dto.ApiResponse;
-import gr.aueb.cf.myreserva.dto.AuthenticationRequestDTO;
-import gr.aueb.cf.myreserva.dto.AuthenticationResponseDTO;
-import gr.aueb.cf.myreserva.dto.TokensAndUserDTO;
+import gr.aueb.cf.myreserva.dto.*;
 import gr.aueb.cf.myreserva.dto.user.UserInsertDTO;
+import gr.aueb.cf.myreserva.dto.user.UserReadOnlyDTO;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Null;
@@ -40,7 +38,7 @@ public class AuthRestController {
      * LOGIN
      */
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<AuthenticationResponseDTO>> authenticate(
+    public ResponseEntity<ApiAuthResponse> authenticate(
             @Valid @ModelAttribute AuthenticationRequestDTO authenticationRequestDTO, // @ModelAttribute for x-form-urlencoded data
             HttpServletResponse response
     )
@@ -60,10 +58,11 @@ public class AuthRestController {
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
         AuthenticationResponseDTO authenticationResponseDTO = new AuthenticationResponseDTO(tokensAndUserDTO.user(), tokensAndUserDTO.accessToken());
-        ApiResponse<AuthenticationResponseDTO> apiResponse = new ApiResponse<>(
+        ApiAuthResponse apiResponse = new ApiAuthResponse(
                 true,
                 "User logged in",
-                authenticationResponseDTO
+                authenticationResponseDTO.user(),
+                authenticationResponseDTO.accessToken()
         );
 
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
@@ -74,18 +73,27 @@ public class AuthRestController {
      * REGISTER
      */
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<AuthenticationResponseDTO>> register(
-            @Valid @RequestBody UserInsertDTO insertDTO,
+    public ResponseEntity<ApiAuthResponse> register(
+            @Valid @ModelAttribute UserInsertDTO insertDTO,
             BindingResult bindingResult
     ) throws AppObjectAlreadyExists, ValidationException {
         try {
-            if (bindingResult.hasErrors()) throw new ValidationException(bindingResult);
+            if (bindingResult.hasErrors()) {
+                bindingResult.getAllErrors().forEach(err ->
+                        LOGGER.error("Validation error: {}", err.getDefaultMessage())
+                );
+                throw new ValidationException(bindingResult);
+            }
 
             AuthenticationResponseDTO authenticationResponseDTO = authenticationService.register(insertDTO);
-            ApiResponse<AuthenticationResponseDTO> apiResponse = new ApiResponse<>(
+            UserReadOnlyDTO userReadOnlyDTO = authenticationResponseDTO.user();
+            String accessToken = authenticationResponseDTO.accessToken();
+
+            ApiAuthResponse apiResponse = new ApiAuthResponse(
                     true,
                     "New user created",
-                    authenticationResponseDTO
+                    userReadOnlyDTO,
+                    accessToken
             );
 
             return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
@@ -159,10 +167,10 @@ public class AuthRestController {
         // Clear cookie in any case
         ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
-                .secure(true)         // set to true in production
+                .secure(false)         // set to true in production
                 .path("/")
                 .maxAge(0)            // deletes the cookie immediately
-                .sameSite("Strict")   // optional for CSRF protection
+                .sameSite("Lax")   // CSRF protection
                 .build();
 
         return ResponseEntity.ok()
