@@ -35,8 +35,8 @@ public record UserInsertDTO(
                 regexp = "^69\\d{8}$",
                 message = "Invalid Greek phone number"
         )
-        String phoneNumber,
+        String phoneNumber
 
-        @NotNull(message = "Role is required")
-        Role role
+//        @NotNull(message = "Role is required")
+//        Role role
 ) {}

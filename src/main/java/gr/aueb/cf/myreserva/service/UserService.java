@@ -10,6 +10,10 @@ import gr.aueb.cf.myreserva.model.User;
 import gr.aueb.cf.myreserva.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -35,11 +39,11 @@ public class UserService {
     /**
      * UPDATE CURRENT USER
      */
-    @Transactional(rollbackOn = {AppObjectNotFoundException.class, IOException.class}) // In case of runtime exceptions or specified checked exceptions, rollback.
-    public UserReadOnlyDTO updateUser(UserUpdateDTO updateDTO, String email) throws AppObjectNotFoundException, IOException, AppObjectAlreadyExists {
+    @Transactional(rollbackOn = {AppObjectNotFoundException.class}) // In case of runtime exceptions or specified checked exceptions, rollback.
+    public UserReadOnlyDTO updateUser(UserUpdateDTO updateDTO, String email) throws AppObjectNotFoundException, AppObjectAlreadyExists {
 
         User existingUser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User with email " + email + " not found."));
+                .orElseThrow(() -> new AppObjectNotFoundException("User", "User with email " + email + " not found."));
 
         // Check if email or phone number already exist in some other user's data
         if (userRepository.existsByEmail(updateDTO.email())
@@ -60,5 +64,26 @@ public class UserService {
         User savedUser = userRepository.save(existingUser);
 
         return mapper.mapToUserReadOnlyDTO(savedUser);
+    }
+
+
+    @Transactional
+    public Page<UserReadOnlyDTO> getPaginatedUsers(int page, int size) {
+        String defaultSort = "id";
+        Pageable pageable = PageRequest.of(page, size, Sort.by(defaultSort).ascending());
+        return userRepository.findAll(pageable).map(mapper::mapToUserReadOnlyDTO);
+    }
+
+
+    public UserReadOnlyDTO getUserById(Long id) throws AppObjectNotFoundException {
+        User user = userRepository.findById(id).orElseThrow(() -> new AppObjectNotFoundException("User", "User with _id: " + id + " not found"));
+        return mapper.mapToUserReadOnlyDTO(user);
+    }
+
+
+    public void deleteUserById(Long id) throws AppObjectNotFoundException {
+        if (userRepository.findById(id).isPresent())
+            userRepository.deleteById(id);
+        else throw new AppObjectNotFoundException("User", "User with _id: " + id + " not found");
     }
 }
