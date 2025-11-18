@@ -29,21 +29,41 @@ reservations filtered by date.
 1. Clone the repo ``` git clone git@github.com:CharioMich/my-reserva-spring-api.git ``` (SSH)
 
 
-2. In ``` src/main/resources/application.properties ``` set the spring profile to dev 
+2. Create a ```.env``` file, paste the following and update it with your credentials:
+```declarative
+# MySQL credentials
+MYSQL_ROOT_PASSWORD=root
+MYSQL_DATABASE=myreserva
+MYSQL_USER=myuser
+MYSQL_PASSWORD=mypassword
+```
+
+
+3. In ``` src/main/resources/application.properties ``` set the spring profile to dev 
 ```java 
    spring.profiles.active=dev  
 ```
-3. Go to ``` src/main/resources/application-dev.properties ``` and replace the fields containing '!' such as ``` !YourDataBaseName! ```
-with your corresponding database name, credentials and jwt secret key.
+
+4. Go to ``` src/main/resources/application-dev.properties ``` and replace the fields containing '!' such as ``` !YourDataBaseName! ```
+with your corresponding database name, credentials and jwt secret key. These are the fallback values in case
+```.env``` the system is unable to retrieve the environmental variables from ```.env``` file.
    Optionally, add email addresses to admin whitelist. ``` admin.whitelist=admin@aueb.gr, ... ```
 
 
-4. Build the project and run ``` ./gradlew bootRun ```
+5. Run the project locally with:
+```declarative
+./gradlew bootRun
+```
+
+6. To run with docker:
+```declarative
+docker compose up --build
+```
 
 The project should be running on ``` http://localhost:8080/api ```
 
 
-Browse to http://localhost:8080/api/swagger-ui/index.html for OpenAPI endpoint documentation. (documentation under development)
+Browse to http://localhost:8080/api/swagger-ui/index.html for OpenAPI endpoint documentation. (documentation not complete)
 
 ---
 ## Postman
