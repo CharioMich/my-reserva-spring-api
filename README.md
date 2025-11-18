@@ -65,6 +65,11 @@ The project should be running on ``` http://localhost:8080/api ```
 
 Browse to http://localhost:8080/api/swagger-ui/index.html for OpenAPI endpoint documentation. (documentation not complete)
 
+7. (Docker clean up) Stop & remove containers and delete the database data:
+```declarative
+docker compose down -v
+```
+
 ---
 ## Postman
 A Postman collection and environment to test the API are included under the ``` src/main/resources/postman ``` directory.
