@@ -45,8 +45,8 @@ MYSQL_PASSWORD=mypassword
 ```
 
 4. Go to ``` src/main/resources/application-dev.properties ``` and replace the fields containing '!' such as ``` !YourDataBaseName! ```
-with your corresponding database name, credentials and jwt secret key. These are the fallback values in case
-```.env``` the system is unable to retrieve the environmental variables from ```.env``` file.
+with your corresponding database name, credentials and jwt secret key. These are the fallback values in case 
+the system is unable to retrieve the environmental variables from ```.env``` file.
    Optionally, add email addresses to admin whitelist. ``` admin.whitelist=admin@aueb.gr, ... ```
 
 
@@ -55,7 +55,7 @@ with your corresponding database name, credentials and jwt secret key. These are
 ./gradlew bootRun
 ```
 
-6. To run with docker:
+6. Or, to run with **docker**:
 ```declarative
 docker compose up --build
 ```
