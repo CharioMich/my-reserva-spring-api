@@ -8,6 +8,9 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 
 import java.io.IOException;
 
+/**
+ * This class implements Spring Security’s AuthenticationEntryPoint, meaning it defines how to respond when authentication is required but missing.
+ */
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override

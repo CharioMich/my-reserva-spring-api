@@ -49,16 +49,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             email = jwtService.extractSubject(jwt);
             userRole = jwtService.getStringClaim(jwt, "role");
 
+            // Check if user is not already authenticated. Only proceed if not.
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                // Load user details
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
                 if (jwtService.isTokenValid(jwt, userDetails.getUsername())) {
+                    // If token is valid, Set authentication in Spring Security context
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,
                             userDetails.getAuthorities()
                     );
+                    // attach request details
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    // save authentication:
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 } else {
                     LOGGER.warn("Token is not valid" + request.getRequestURI());
@@ -79,6 +84,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.getWriter().write(jsonBody);
             return;
         }
+        // Continue filter chain
         filterChain.doFilter(request, response);
     }
 }

@@ -14,7 +14,8 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 
     /**
-     * Returns an Optional with the User details retrieved from the database
+     * Returns an Optional with the User details retrieved from the database using the email.
+     * The overridden method is by default called loadUserByUsername in UserDetailsService interface, but we can use any identifier (in this case, email)
      */
     @Override
     public UserDetails loadUserByUsername(String email)
